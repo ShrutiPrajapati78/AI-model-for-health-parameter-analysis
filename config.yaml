@@ -1,0 +1,22 @@
+credentials:
+  usernames:
+    admin:
+      email: admin@drdo.demo
+      name: Admin
+      password: admin123
+    shruti:
+      email: shruti@drdo.demo
+      name: Shruti
+      password: shruti123
+    guest:
+      email: guest@drdo.demo
+      name: Guest User
+      password: guest123
+
+cookie:
+  name: health_app_auth_cookie
+  key: drdo_health_monitor_secret_key_2026
+  expiry_days: 7
+
+preauthorized:
+  emails: []
