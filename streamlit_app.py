@@ -204,8 +204,9 @@ if not st.session_state.authenticated:
             else:
                 st.error("❌ Username / password incorrect")
 
-    st.info("🔑 Demo logins — **shruti / shruti123**, **admin / admin123**, **guest / guest123**")
+    st.info("")
     st.stop()
+    # 🔑 Demo logins — **shruti / shruti123**, **admin / admin123**, **guest / guest123
 
 # ---------- Authenticated from here on ----------
 username = st.session_state.username

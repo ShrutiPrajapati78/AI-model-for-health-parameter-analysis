@@ -3,3 +3,4 @@ timestamp,username,systolic_bp,diastolic_bp,temperature_f,spo2,status,confidence
 2026-08-23 01:18:40,shruti,140,65,102.2,97,normal,56.0
 2026-08-23 01:19:46,shruti,140,65,102.2,78,critical,99.0
 2026-08-23 01:34:06,shruti,118,109,98.6,97,normal,90.0
+2026-08-23 22:35:26,shruti,155,94,98.6,89,critical,98.5
