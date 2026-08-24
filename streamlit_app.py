@@ -164,7 +164,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------- Auth setup (simple, custom — no external cookie component) ----------
-with open("config.yaml") as file:
+CONFIG_PATH = Path("config.yaml")
+
+with open(CONFIG_PATH) as file:
     config = yaml.load(file, Loader=SafeLoader)
 
 USERS = config["credentials"]["usernames"]
@@ -188,25 +190,56 @@ if not st.session_state.authenticated:
 
     _, mid, _ = st.columns([1, 1.2, 1])
     with mid:
-        with st.form("login_form"):
-            st.subheader("Login")
-            input_user = st.text_input("Username")
-            input_pass = st.text_input("Password", type="password")
-            submitted = st.form_submit_button("Login", use_container_width=True)
+        login_tab, signup_tab = st.tabs(["🔑 Login", "📝 Create Account"])
 
-        if submitted:
-            user_record = USERS.get(input_user)
-            if user_record and str(user_record.get("password")) == input_pass:
-                st.session_state.authenticated = True
-                st.session_state.username = input_user
-                st.session_state.name = user_record.get("name", input_user)
-                st.rerun()
-            else:
-                st.error("❌ Username / password incorrect")
+        with login_tab:
+            with st.form("login_form"):
+                st.subheader("Login")
+                input_user = st.text_input("Username")
+                input_pass = st.text_input("Password", type="password")
+                submitted = st.form_submit_button("Login", use_container_width=True)
 
-    st.info("")
+            if submitted:
+                user_record = USERS.get(input_user)
+                if user_record and str(user_record.get("password")) == input_pass:
+                    st.session_state.authenticated = True
+                    st.session_state.username = input_user
+                    st.session_state.name = user_record.get("name", input_user)
+                    st.rerun()
+                else:
+                    st.error("❌ Username / password incorrect")
+
+        with signup_tab:
+            with st.form("signup_form"):
+                st.subheader("Create Account")
+                new_name = st.text_input("Full Name")
+                new_username = st.text_input("Choose Username")
+                new_password = st.text_input("Choose Password", type="password")
+                confirm_password = st.text_input("Confirm Password", type="password")
+                signup_submitted = st.form_submit_button("Create Account", use_container_width=True)
+
+            if signup_submitted:
+                if not new_name or not new_username or not new_password:
+                    st.error("❌ Please fill in all fields")
+                elif new_username in USERS:
+                    st.error("❌ That username is already taken — choose another")
+                elif len(new_password) < 4:
+                    st.error("❌ Password must be at least 4 characters")
+                elif new_password != confirm_password:
+                    st.error("❌ Passwords don't match")
+                else:
+                    USERS[new_username] = {
+                        "name": new_name,
+                        "email": f"{new_username}@drdo.demo",
+                        "password": new_password,
+                    }
+                    config["credentials"]["usernames"] = USERS
+                    with open(CONFIG_PATH, "w") as f:
+                        yaml.dump(config, f)
+                    st.success(f"✅ Account created for {new_name}! Go to the Login tab to sign in.")
+
+    # st.info("🔑 Demo logins — **shruti / shruti123**, **admin / admin123**, **guest / guest123** — or create your own account above.")
     st.stop()
-    # 🔑 Demo logins — **shruti / shruti123**, **admin / admin123**, **guest / guest123
 
 # ---------- Authenticated from here on ----------
 username = st.session_state.username
@@ -510,8 +543,3 @@ with tab_history:
                                 file_name=f"{username}_history.csv", mime="text/csv")
     else:
         st.info("No predictions yet. Make one in the Predict tab.")
-
-st.markdown(
-     '<div class="app-footer"></div>',
-     unsafe_allow_html=True,
-)
